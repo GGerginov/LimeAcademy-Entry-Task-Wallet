@@ -1,24 +1,38 @@
-package com.example.model.entity;
+package com.example.gwallet.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
-public class Wallet extends BaseEntity{
+public class Wallet{
 
+    private UUID id;
     private String address;
 
     private Double balance;
 
     private List<Transaction> sendTransactions;
     private List<Transaction> receiveTransactions;
+
+
     public Wallet() {
     }
 
+
+    @Id
+    @GeneratedValue(generator = "uuid-string")
+    @GenericGenerator(name = "uuid-string", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     @Column(nullable = false,unique = true,length = 42)
     public String getAddress() {
@@ -29,7 +43,7 @@ public class Wallet extends BaseEntity{
         this.address = address;
     }
 
-    @Column(nullable = false,columnDefinition="Decimal(10,2) default '100.00'")
+    @Column(nullable = false,columnDefinition="Decimal(60,30) default '100.00'")
     public Double getBalance() {
         return balance;
     }

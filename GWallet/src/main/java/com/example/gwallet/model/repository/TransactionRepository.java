@@ -1,6 +1,6 @@
-package com.example.model.repository;
+package com.example.gwallet.model.repository;
 
-import com.example.model.entity.Transaction;
+import com.example.gwallet.model.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
