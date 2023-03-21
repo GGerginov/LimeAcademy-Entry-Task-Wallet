@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-public class Wallet{
+public class Wallet {
 
     private UUID id;
     private String address;
@@ -34,7 +34,7 @@ public class Wallet{
         this.id = id;
     }
 
-    @Column(nullable = false,unique = true,length = 42)
+    @Column(nullable = false, unique = true, length = 42)
     public String getAddress() {
         return address;
     }
@@ -43,7 +43,7 @@ public class Wallet{
         this.address = address;
     }
 
-    @Column(nullable = false,columnDefinition="Decimal(60,30) default '100.00'")
+    @Column(nullable = false, columnDefinition = "Decimal(60,30) default '100.00'")
     public Double getBalance() {
         return balance;
     }
@@ -52,7 +52,7 @@ public class Wallet{
         this.balance = balance;
     }
 
-    @OneToMany(mappedBy="sender")
+    @OneToMany(mappedBy = "sender")
     public List<Transaction> getSendTransactions() {
         return sendTransactions;
     }
@@ -61,7 +61,7 @@ public class Wallet{
         this.sendTransactions = sendTransactions;
     }
 
-    @OneToMany(mappedBy="receiver")
+    @OneToMany(mappedBy = "receiver")
     public List<Transaction> getReceiveTransactions() {
         return receiveTransactions;
     }

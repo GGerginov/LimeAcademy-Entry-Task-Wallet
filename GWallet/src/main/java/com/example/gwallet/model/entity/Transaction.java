@@ -33,7 +33,7 @@ public class Transaction {
     }
 
 
-    @Column(nullable = false,updatable = false,columnDefinition="Decimal(60,30) default '100.00'")
+    @Column(nullable = false, updatable = false, columnDefinition = "Decimal(60,30) default '100.00'")
     public Double getAmount() {
         return amount;
     }
@@ -44,7 +44,7 @@ public class Transaction {
 
 
     @ManyToOne
-    @JoinColumn(name = "sender_id",nullable = false,updatable = false)
+    @JoinColumn(name = "sender_id", nullable = false, updatable = false)
     public Wallet getSender() {
         return sender;
     }
@@ -54,7 +54,7 @@ public class Transaction {
     }
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id",nullable = false,updatable = false)
+    @JoinColumn(name = "receiver_id", nullable = false, updatable = false)
     public Wallet getReceiver() {
         return receiver;
     }
