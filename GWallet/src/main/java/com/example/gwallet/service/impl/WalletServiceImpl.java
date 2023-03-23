@@ -1,6 +1,6 @@
 package com.example.gwallet.service.impl;
 
-import com.example.gwallet.controller.RequestDTOs.TransactionRequestDTO;
+import com.example.gwallet.exceptions.ApiException;
 import com.example.gwallet.model.DTOs.WalletDto;
 import com.example.gwallet.model.entity.Wallet;
 import com.example.gwallet.model.repository.WalletRepository;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Random;
+
+import static com.example.gwallet.model.jsonMessages.Messages.ErrorMessages.*;
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -33,18 +35,17 @@ public class WalletServiceImpl implements WalletService {
 
         List<Wallet> wallets = this.walletRepository.findAll();
 
-        Type avatarDtoType = new TypeToken<List<WalletDto>>() {
+        Type walletDtoType = new TypeToken<List<WalletDto>>() {
         }.getType();
 
 
-        return this.modelMapper.map(wallets, avatarDtoType);
+        return this.modelMapper.map(wallets, walletDtoType);
     }
 
     @Override
-    public WalletDto getWalletByAddress(String address) {
+    public WalletDto getWalletByAddress(String address) throws ApiException {
 
-        //TODO
-        Wallet wallet = walletRepository.findByAddress(address).orElseThrow();
+        Wallet wallet = getWalletByAddressOrThrowException(address);
 
         return this.modelMapper.map(wallet, WalletDto.class);
     }
@@ -56,7 +57,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public boolean makeATransaction(String senderAddress,String receiverAddress,Double amount) throws Exception {
+    public boolean makeATransaction(String senderAddress, String receiverAddress, Double amount) throws ApiException {
 
         WalletDto sender = this.getWalletByAddress(senderAddress);
         WalletDto receiver = this.getWalletByAddress(receiverAddress);
@@ -69,15 +70,12 @@ public class WalletServiceImpl implements WalletService {
             boolean receiverFlag = walletRepository.updateWalletAmountByAddress(receiver.getBalance() + amount
                     , receiver.getAddress()) == 1;
 
-            if (!senderFlag && !receiverFlag){
-                //TODO
-                throw new Exception();
+            if (!senderFlag && !receiverFlag) {
+               throw new ApiException(TRANSACTION_FAILED);
             }
             return true;
-        }
-        else {
-            //TODO
-            throw new Exception();
+        } else {
+            throw new ApiException(SENDER_DOES_NOT_HAVE_ENOUGH_BALANCE);
         }
     }
 
@@ -95,6 +93,10 @@ public class WalletServiceImpl implements WalletService {
 
     private static boolean isValid(Double amount, WalletDto sender) {
         return sender.getBalance() >= amount;
+    }
+
+    private Wallet getWalletByAddressOrThrowException(String address) throws ApiException {
+        return this.walletRepository.findByAddress(address).orElseThrow(() -> new ApiException(WALLET_NOT_FOUND));
     }
 
 }

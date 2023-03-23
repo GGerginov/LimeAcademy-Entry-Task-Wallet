@@ -23,7 +23,7 @@ public class AddressExistValidator implements ConstraintValidator<AddressExist,S
 
     @Override
     public boolean isValid(String address, ConstraintValidatorContext context) {
-        return !this.walletService.isAddressExist(address);
+        return this.walletService.isAddressExist(address);
     }
 
 }

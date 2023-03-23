@@ -1,17 +1,19 @@
 package com.example.gwallet.service.impl;
 
 import com.example.gwallet.controller.RequestDTOs.TransactionRequestDTO;
+import com.example.gwallet.exceptions.ApiException;
 import com.example.gwallet.model.DTOs.TransactionDto;
 import com.example.gwallet.model.entity.Transaction;
 import com.example.gwallet.model.entity.Wallet;
 import com.example.gwallet.model.repository.TransactionRepository;
 import com.example.gwallet.service.NetworkService;
 import com.example.gwallet.service.WalletService;
-import jakarta.persistence.EntityManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.gwallet.model.jsonMessages.Messages.ErrorMessages.TRANSACTION_FAILED;
 
 
 @Service
@@ -36,7 +38,7 @@ public class NetworkServiceImpl implements NetworkService {
 
     @Override
     @Transactional
-    public TransactionDto createTransaction(TransactionRequestDTO transactionRequestDTO) throws Exception {
+    public TransactionDto createTransaction(TransactionRequestDTO transactionRequestDTO) throws ApiException {
 
         Double transactionAmount = transactionRequestDTO.getAmount();
         this.fees += transactionAmount * TRANSACTION_FEE_PERCENT;
@@ -46,9 +48,8 @@ public class NetworkServiceImpl implements NetworkService {
                 , transactionRequestDTO.getReceiverAddress()
                 , transactionAmount);
 
-        if (!isTransactionPassed){
-            //TODO
-            throw new Exception();
+        if (!isTransactionPassed) {
+            throw new ApiException(TRANSACTION_FAILED);
         }
         Wallet sender = this.modelMapper.map(
                 this.walletService.getWalletByAddress(transactionRequestDTO.getSenderAddress()),
