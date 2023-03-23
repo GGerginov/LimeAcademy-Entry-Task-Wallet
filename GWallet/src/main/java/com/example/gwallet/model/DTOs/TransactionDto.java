@@ -10,16 +10,26 @@ import java.util.UUID;
  * A DTO for the {@link Transaction} entity
  */
 public class TransactionDto implements Serializable {
-    private final UUID id;
-    private final Double amount;
-    private final WalletDto sender;
-    private final WalletDto receiver;
+    private UUID id;
+    private Double amount;
+    private WalletDto sender;
+    private WalletDto receiver;
 
     public TransactionDto(UUID id, Double amount, WalletDto sender, WalletDto receiver) {
         this.id = id;
         this.amount = amount;
         this.sender = sender;
         this.receiver = receiver;
+    }
+
+    public TransactionDto(Double amount, WalletDto sender, WalletDto receiver) {
+        this.id = null;
+        this.amount = amount;
+        this.sender = sender;
+        this.receiver = receiver;
+    }
+
+    public TransactionDto() {
     }
 
     public UUID getId() {

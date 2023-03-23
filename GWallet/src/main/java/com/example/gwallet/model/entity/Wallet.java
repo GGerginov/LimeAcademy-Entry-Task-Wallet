@@ -12,7 +12,7 @@ public class Wallet {
     private UUID id;
     private String address;
 
-    private Double balance;
+    private Double balance = 100.00;
 
     private List<Transaction> sendTransactions;
     private List<Transaction> receiveTransactions;
@@ -21,6 +21,9 @@ public class Wallet {
     public Wallet() {
     }
 
+    public Wallet(String address) {
+        this.address = address;
+    }
 
     @Id
     @GeneratedValue(generator = "uuid-string")
@@ -43,7 +46,7 @@ public class Wallet {
         this.address = address;
     }
 
-    @Column(nullable = false, columnDefinition = "Decimal(60,30) default '100.00'")
+    @Column(columnDefinition = "Decimal(60,30) default '100.00'")
     public Double getBalance() {
         return balance;
     }

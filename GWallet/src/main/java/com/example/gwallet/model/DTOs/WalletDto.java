@@ -1,23 +1,27 @@
 package com.example.gwallet.model.DTOs;
 
-import com.example.gwallet.model.entity.Wallet;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * A DTO for the {@link Wallet} entity
- */
 public class WalletDto implements Serializable {
-    private final UUID id;
-    private final String address;
-    private final Double balance;
 
-    public WalletDto(UUID id, String address, Double balance) {
-        this.id = id;
+    private UUID id;
+
+    private String address;
+    private Double balance;
+    private List<TransactionDto> sendTransactions;
+    private List<TransactionDto> receiveTransactions;
+
+    public WalletDto(String address) {
         this.address = address;
-        this.balance = balance;
+    }
+
+    public WalletDto() {
     }
 
     public UUID getId() {
@@ -32,26 +36,38 @@ public class WalletDto implements Serializable {
         return balance;
     }
 
+    @JsonIgnore
+    public List<TransactionDto> getSendTransactions() {
+        return sendTransactions;
+    }
+
+    @JsonIgnore
+    public List<TransactionDto> getReceiveTransactions() {
+        return receiveTransactions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WalletDto entity = (WalletDto) o;
-        return Objects.equals(this.id, entity.id) &&
-                Objects.equals(this.address, entity.address) &&
-                Objects.equals(this.balance, entity.balance);
+        return Objects.equals(this.address, entity.address) &&
+                Objects.equals(this.balance, entity.balance) &&
+                Objects.equals(this.sendTransactions, entity.sendTransactions) &&
+                Objects.equals(this.receiveTransactions, entity.receiveTransactions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, balance);
+        return Objects.hash(address, balance, sendTransactions, receiveTransactions);
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
                 "address = " + address + ", " +
-                "balance = " + balance + ")";
+                "balance = " + balance + ", " +
+                "sendTransactions = " + sendTransactions + ", " +
+                "receiveTransactions = " + receiveTransactions + ")";
     }
 }

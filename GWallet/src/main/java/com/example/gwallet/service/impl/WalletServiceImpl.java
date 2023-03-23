@@ -1,9 +1,11 @@
 package com.example.gwallet.service.impl;
 
+import com.example.gwallet.controller.RequestDTOs.TransactionRequestDTO;
 import com.example.gwallet.model.DTOs.WalletDto;
 import com.example.gwallet.model.entity.Wallet;
 import com.example.gwallet.model.repository.WalletRepository;
 import com.example.gwallet.service.WalletService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -41,10 +43,58 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public WalletDto getWalletByAddress(String address) {
 
-
         //TODO
         Wallet wallet = walletRepository.findByAddress(address).orElseThrow();
 
         return this.modelMapper.map(wallet, WalletDto.class);
     }
+
+    @Override
+    public boolean isAddressExist(String address) {
+        return this.walletRepository.isAddressExist(address);
+    }
+
+    @Override
+    @Transactional
+    public boolean makeATransaction(String senderAddress,String receiverAddress,Double amount) throws Exception {
+
+        WalletDto sender = this.getWalletByAddress(senderAddress);
+        WalletDto receiver = this.getWalletByAddress(receiverAddress);
+
+        if (isValid(amount, sender)) {
+
+            boolean senderFlag = walletRepository.updateWalletAmountByAddress(sender.getBalance() - amount
+                    , sender.getAddress()) == 1;
+
+            boolean receiverFlag = walletRepository.updateWalletAmountByAddress(receiver.getBalance() + amount
+                    , receiver.getAddress()) == 1;
+
+            if (!senderFlag && !receiverFlag){
+                //TODO
+                throw new Exception();
+            }
+            return true;
+        }
+        else {
+            //TODO
+            throw new Exception();
+        }
+    }
+
+    @Override
+    public WalletDto createNewWallet() {
+
+        //TODO think about better address generation
+        Random random = new Random();
+        String address = "0x9e73e12B0A4c4ba4f4B346A7c23D657d79C7e9" + random.nextInt(0, 9) + random.nextInt(0, 9);
+        Wallet wallet = new Wallet(address);
+
+        return this.modelMapper.map(this.walletRepository.saveAndFlush(wallet), WalletDto.class);
+    }
+
+
+    private static boolean isValid(Double amount, WalletDto sender) {
+        return sender.getBalance() >= amount;
+    }
+
 }
