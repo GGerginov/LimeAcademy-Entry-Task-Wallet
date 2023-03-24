@@ -5,7 +5,6 @@ import com.example.gwallet.exceptions.ApiException;
 import com.example.gwallet.model.DTOs.WalletDto;
 import com.example.gwallet.model.jsonMessages.ErrorResponse.ErrorResponse;
 import com.example.gwallet.model.jsonMessages.SuccessResponse.SuccessResponse;
-import com.example.gwallet.model.jsonMessages.SuccessResponse.SuccessResponseBody;
 import com.example.gwallet.service.WalletService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
