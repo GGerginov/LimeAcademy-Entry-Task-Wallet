@@ -5,6 +5,7 @@ import com.example.gwallet.model.DTOs.WalletDto;
 import com.example.gwallet.model.entity.Wallet;
 import com.example.gwallet.model.repository.WalletRepository;
 import com.example.gwallet.service.WalletService;
+import com.example.gwallet.utills.BlockchainAddressGenerator;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -17,6 +18,15 @@ import java.util.Random;
 
 import static com.example.gwallet.model.jsonMessages.Messages.ErrorMessages.*;
 
+/**
+ * Service implementation for the wallet-related functionalities in the GWallet application.
+ *  This service is responsible for handling wallet-specific operations, such as
+ *  retrieving all wallets, getting a wallet by its address, checking if an address exists,
+ *  making transactions, and creating new wallets.
+ *  @author G.Gerginov
+ *  @version 1.0
+ *  @since 1.0
+ */
 @Service
 public class WalletServiceImpl implements WalletService {
 
@@ -24,12 +34,28 @@ public class WalletServiceImpl implements WalletService {
 
     private final ModelMapper modelMapper;
 
+    private final BlockchainAddressGenerator generator;
+
+    /**
+     * Constructor for WalletServiceImpl.
+     *
+     * @param walletRepository The wallet repository to be used
+     * @param modelMapper      The model mapper to be used
+     * @param generator
+     */
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, ModelMapper modelMapper) {
+    public WalletServiceImpl(WalletRepository walletRepository, ModelMapper modelMapper, BlockchainAddressGenerator generator) {
         this.walletRepository = walletRepository;
         this.modelMapper = modelMapper;
+        this.generator = generator;
     }
 
+
+    /**
+     * Returns a list of all wallets in the system.
+     *
+     * @return List<WalletDto> The list of wallet data transfer objects
+     */
     @Override
     public List<WalletDto> getAllWallets() {
 
@@ -42,6 +68,13 @@ public class WalletServiceImpl implements WalletService {
         return this.modelMapper.map(wallets, walletDtoType);
     }
 
+    /**
+     * Returns a wallet data transfer object by its address.
+     *
+     * @param address The wallet's address
+     * @return WalletDto The wallet data transfer object
+     * @throws ApiException if the wallet is not found
+     */
     @Override
     public WalletDto getWalletByAddress(String address) throws ApiException {
 
@@ -50,11 +83,30 @@ public class WalletServiceImpl implements WalletService {
         return this.modelMapper.map(wallet, WalletDto.class);
     }
 
+    /**
+     * Checks if a wallet address exists in the system.
+     *
+     * @param address The wallet's address
+     * @return boolean True if the address exists, false otherwise
+     */
     @Override
     public boolean isAddressExist(String address) {
         return this.walletRepository.isAddressExist(address);
     }
 
+    /**
+     * Makes a transaction between two wallets, updating their respective balances.
+     *
+     * This method checks if the transaction is valid, updates the sender's and receiver's
+     * balances, and returns true if the transaction is successful. It throws an ApiException
+     * if the transaction fails or if the sender does not have enough balance.
+     *
+     * @param senderAddress   The address of the sender's wallet
+     * @param receiverAddress The address of the receiver's wallet
+     * @param amount          The amount to be transferred
+     * @return boolean        True if the transaction is successful, false otherwise
+     * @throws ApiException   If the transaction fails or the sender does not have enough balance
+     */
     @Override
     @Transactional
     public boolean makeATransaction(String senderAddress, String receiverAddress, Double amount) throws ApiException {
@@ -79,12 +131,20 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
+    /**
+     * Creates a new wallet with a randomly generated address and saves it to the repository.
+     *
+     * This method generates a new wallet address with a unique blockchain address
+     * creates a Wallet object with the generated address, saves it to the repository, and returns a
+     * WalletDto object representing the created wallet. Future improvements could involve implementing
+     * a more robust address generation mechanism.
+     *
+     * @return WalletDto The wallet data transfer object representing the newly created wallet
+     */
     @Override
     public WalletDto createNewWallet() {
 
-        //TODO think about better address generation
-        Random random = new Random();
-        String address = "0x9e73e12B0A4c4ba4f4B346A7c23D657d79C7e9" + random.nextInt(0, 9) + random.nextInt(0, 9);
+        String address = this.generator.generateAddress();
         Wallet wallet = new Wallet(address);
 
         return this.modelMapper.map(this.walletRepository.saveAndFlush(wallet), WalletDto.class);

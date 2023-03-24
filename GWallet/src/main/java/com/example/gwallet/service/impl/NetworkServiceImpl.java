@@ -15,7 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.gwallet.model.jsonMessages.Messages.ErrorMessages.TRANSACTION_FAILED;
 
-
+/**
+ * Service implementation for the network-related functionalities in the GWallet application.
+ * This service is responsible for handling network-specific operations, such as
+ * creating transactions and calculating fees.
+ *
+ * @author G.Gerginov
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class NetworkServiceImpl implements NetworkService {
 
@@ -29,6 +37,13 @@ public class NetworkServiceImpl implements NetworkService {
     private final ModelMapper modelMapper;
 
 
+    /**
+     * Constructor for NetworkServiceImpl.
+     *
+     * @param walletService         The wallet service to be used
+     * @param transactionRepository The transaction repository to be used
+     * @param modelMapper           The model mapper to be used
+     */
     @Autowired
     public NetworkServiceImpl(WalletService walletService, TransactionRepository transactionRepository, ModelMapper modelMapper) {
         this.walletService = walletService;
@@ -36,6 +51,14 @@ public class NetworkServiceImpl implements NetworkService {
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Creates a transaction and updates the wallets of the sender and receiver accordingly.
+     *
+     * @param transactionRequestDTO The transaction request data transfer object containing the necessary information
+     *                              for creating a transaction
+     * @return TransactionDto The data transfer object representing the created transaction
+     * @throws ApiException if the transaction fails
+     */
     @Override
     @Transactional
     public TransactionDto createTransaction(TransactionRequestDTO transactionRequestDTO) throws ApiException {
@@ -65,5 +88,7 @@ public class NetworkServiceImpl implements NetworkService {
         return this.modelMapper.map(transaction, TransactionDto.class);
     }
 
-
+    public Double getFees() {
+        return fees;
+    }
 }

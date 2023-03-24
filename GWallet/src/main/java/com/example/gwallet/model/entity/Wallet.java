@@ -21,6 +21,11 @@ public class Wallet {
     public Wallet() {
     }
 
+    public Wallet(String address, Double balance) {
+        this.address = address;
+        this.balance = balance;
+    }
+
     public Wallet(String address) {
         this.address = address;
     }

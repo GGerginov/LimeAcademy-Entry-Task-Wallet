@@ -21,6 +21,11 @@ public class WalletDto implements Serializable {
         this.address = address;
     }
 
+    public WalletDto(String address, Double balance) {
+        this.address = address;
+        this.balance = balance;
+    }
+
     public WalletDto() {
     }
 
